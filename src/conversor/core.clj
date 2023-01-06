@@ -1,9 +1,11 @@
 (ns conversor.core
-  (:require [clojure.tools.cli :refer [parse-opts]])
+  (:require [conversor.formatador :refer [formatar]]
+            [conversor.interpretador-de-opcoes :refer [interpretar-opcoes]]
+            [conversor.cambista :refer [obter-cotacao]])
   (:gen-class))
 
-(def opcoes-do-programa [["-d" "--de moeda base" "moeda base para conversao" :default "eur"]
-                         ["-p" "--para moeda destino" "moeda a qual queremos saber o valor"]])
-
 (defn -main [& args]
-  (prn "as opcoes sao:" (:options (parse-opts args opcoes-do-programa))))
+  (let [{:keys [de para]} (interpretar-opcoes args)]
+    (-> (obter-cotacao de para)
+        (formatar de para)
+        (prn))))
